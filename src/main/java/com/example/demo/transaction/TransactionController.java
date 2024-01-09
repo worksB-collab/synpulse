@@ -13,25 +13,25 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/transactions")
 public class TransactionController {
-  
-  @Autowired
-  private TransactionService transactionService;
-  
-  @GetMapping("/paginate")
-  public ResponseEntity<PaginatedTransactionResponse> getPaginatedTransactions(
-    @RequestParam("pageNumber") int pageNumber,
-    @RequestParam("pageSize") int pageSize,
-    @RequestParam("month") int month,
-    @RequestParam("year") int year,
-    @RequestParam("currency") String currency,
-    @AuthenticationPrincipal CustomUserDetails userDetails) {
-    
-    String userId = userDetails.getUserId();
-    
-    // Fetch paginated transactions from the service
-    PaginatedTransactionResponse response = transactionService.getPaginatedTransactions(userId, pageNumber, pageSize,
-                                                                                        month, year, currency);
-    
-    return new ResponseEntity<>(response, HttpStatus.OK);
-  }
+
+    @Autowired
+    private TransactionService transactionService;
+
+    @GetMapping("/paginate")
+    public ResponseEntity<PaginatedTransactionResponse> getPaginatedTransactions(
+            @RequestParam("pageNumber") int pageNumber,
+            @RequestParam("pageSize") int pageSize,
+            @RequestParam("month") int month,
+            @RequestParam("year") int year,
+            @RequestParam("originalCurrency") String originalCurrency,
+            @RequestParam("targetCurrency") String targetCurrency,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        String userId = "1";//userDetails.getUserId();
+
+        PaginatedTransactionResponse response = transactionService.getPaginatedTransactions(userId, pageNumber, pageSize,
+                month, year, originalCurrency, targetCurrency);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }
