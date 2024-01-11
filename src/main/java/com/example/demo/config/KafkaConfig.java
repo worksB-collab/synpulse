@@ -16,11 +16,8 @@ import java.util.Map;
 @EnableKafka
 public class KafkaConfig {
 
-    // Set your Kafka bootstrap servers
-    private static final String BOOTSTRAP_SERVERS = "your-kafka-bootstrap-servers";
-
-    // Set the consumer group ID
-    private static final String GROUP_ID = "your-consumer-group-id";
+    private static final String BOOTSTRAP_SERVERS = "localhost:9092";
+    private static final String GROUP_ID = "ebanking-consumer-group";
 
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
@@ -29,7 +26,6 @@ public class KafkaConfig {
         props.put(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        // Add additional configurations if needed
 
         return new DefaultKafkaConsumerFactory<>(props);
     }
