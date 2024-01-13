@@ -1,7 +1,6 @@
 package com.example.demo.transaction;
 
 import com.example.demo.currency_exchange.CurrencyExchangeService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static com.example.demo.Util.convertToJson;
+import static com.example.demo.Util.convertJsonToTransactionList;
 
 @Service
 @Slf4j
@@ -26,12 +25,15 @@ public class TransactionService {
     private TransactionProducerService producerService;
     @Autowired
     private CurrencyExchangeService currencyExchangeService;
+    @Autowired
+    private TransactionProducerService transactionProducerService;
 
     public PaginatedTransactionResponse getPaginatedTransactions(final String userId, final int pageNumber, final int pageSize,
                                                                  final int month, final int year, final String originalCurrency,
                                                                  final String targetCurrency) {
 
-        final List<Transaction> transactions = transactionDao.getTransactions(userId, month, year, pageNumber, pageSize).orElseThrow();
+//        final List<Transaction> transactions = transactionDao.getTransactions(userId, month, year, pageNumber, pageSize).orElseThrow();
+        final List<Transaction> transactions = transactionDao.findAll();
 
         BigDecimal totalCredit = transactions.stream()
                 .filter(transaction -> transaction.getAmount()
@@ -62,18 +64,8 @@ public class TransactionService {
         return new PaginatedTransactionResponse(transactions, totalCredit, totalDebit);
     }
 
-    public void saveTransaction(final Transaction transaction) {
-        final String transactionJson = convertToJson(transaction);
-        producerService.sendTransaction(transactionJson);
-    }
-
-    public void processTransaction(final String transactionJson) {
-        try {
-            final Transaction transaction = objectMapper.readValue(transactionJson, Transaction.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
+    public void saveTransactionList(final String transactionListJson) {
+        transactionDao.saveAll(convertJsonToTransactionList(transactionListJson));
     }
 
 }

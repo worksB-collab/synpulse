@@ -1,6 +1,7 @@
 package com.example.demo.config;
 
 import com.example.demo.transaction.Transaction;
+import com.example.demo.transaction.TransactionProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,8 @@ public class AppConfig {
 
     @Autowired
     private KafkaTemplate<String, Transaction> kafkaTemplate;
+    @Autowired
+    private TransactionProducerService transactionProducerService;
 
     @Bean
     public RestTemplate restTemplate() {
@@ -26,11 +29,11 @@ public class AppConfig {
 
     @Bean
     public void initData() {
-        List<Transaction> transactions = new ArrayList<>();
+        final List<Transaction> transactions = new ArrayList<>();
 
         // Placeholder logic to simulate fetching transactions
         for (int i = 1; i <= 30; i++) {
-            Transaction transaction = new Transaction();
+            final Transaction transaction = new Transaction();
             transaction.setId(UUID.randomUUID()
                     .toString());
             transaction.setAmount(new BigDecimal("100"));
@@ -41,5 +44,6 @@ public class AppConfig {
 
             transactions.add(transaction);
         }
+        transactionProducerService.sendTransactionList(transactions);
     }
 }
