@@ -19,18 +19,16 @@ public class TransactionController {
 
     @GetMapping("/paginate")
     public ResponseEntity<PaginatedTransactionResponse> getPaginatedTransactions(
-            @RequestParam("pageNumber") int pageNumber,
-            @RequestParam("pageSize") int pageSize,
-            @RequestParam("month") int month,
-            @RequestParam("year") int year,
-            @RequestParam("originalCurrency") String originalCurrency,
-            @RequestParam("targetCurrency") String targetCurrency,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @RequestParam("pageNumber") final int pageNumber,
+            @RequestParam("pageSize") final int pageSize,
+            @RequestParam("originalCurrency") final String originalCurrency,
+            @RequestParam("targetCurrency") final String targetCurrency,
+            @AuthenticationPrincipal final CustomUserDetails userDetails) {
 
         String userId = "1";//userDetails.getUserId();
 
-        PaginatedTransactionResponse response = transactionService.getPaginatedTransactions(userId, pageNumber, pageSize,
-                month, year, originalCurrency, targetCurrency);
+        final PaginatedTransactionResponse response = transactionService.getPaginatedTransactions(userId, pageNumber, pageSize,
+                originalCurrency, targetCurrency);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

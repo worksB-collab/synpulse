@@ -11,6 +11,5 @@ import java.util.Optional;
 public interface TransactionDao extends JpaRepository<Transaction, Long> {
 
     @Query("SELECT t FROM Transaction t WHERE t.id = ?1")
-    Optional<List<Transaction>> getTransactions(String userId, int month,
-                                                int year, int pageNumber, int pageSize);
+    Optional<List<Transaction>> getTransactions(final String userId, final int pageNumber, final int pageSize);
 }

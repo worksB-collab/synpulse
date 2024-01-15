@@ -29,7 +29,7 @@ public class TransactionService {
     private TransactionProducerService transactionProducerService;
 
     public PaginatedTransactionResponse getPaginatedTransactions(final String userId, final int pageNumber, final int pageSize,
-                                                                 final int month, final int year, final String originalCurrency,
+                                                                 final String originalCurrency,
                                                                  final String targetCurrency) {
 
 //        final List<Transaction> transactions = transactionDao.getTransactions(userId, month, year, pageNumber, pageSize).orElseThrow();
