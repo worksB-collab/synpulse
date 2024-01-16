@@ -20,4 +20,5 @@ public class TransactionConsumerService {
         transactionService.saveTransactionList(transactionJson);
     }
 
+
 }

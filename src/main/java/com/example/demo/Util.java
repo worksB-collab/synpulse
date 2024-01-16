@@ -1,6 +1,5 @@
 package com.example.demo;
 
-import com.example.demo.transaction.Transaction;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.experimental.UtilityClass;
@@ -8,17 +7,20 @@ import lombok.experimental.UtilityClass;
 import java.util.List;
 
 @UtilityClass
-public class Util {
+public class Util<T> {
 
     private static final Gson gson = new Gson();
 
-
-    public static String convertListToJson(final List<Transaction> transactions) {
-        return gson.toJson(transactions);
+    public static <T> String convertToJson(final T object) {
+        return gson.toJson(object);
     }
 
-    public static List<Transaction> convertJsonToTransactionList(final String transactionListJson) {
-        return gson.fromJson(transactionListJson, new TypeToken<List<Transaction>>() {
+    public static <T> List<T> convertJsonToList(final String listJson, final Class<T> type) {
+        return gson.fromJson(listJson, TypeToken.getParameterized(List.class, type).getType());
+    }
+
+    public static <T> T convertJsonToObject(final String objectJson) {
+        return gson.fromJson(objectJson, new TypeToken<T>() {
         }.getType());
     }
 }

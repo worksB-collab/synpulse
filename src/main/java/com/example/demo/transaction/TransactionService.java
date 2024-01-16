@@ -1,7 +1,6 @@
 package com.example.demo.transaction;
 
 import com.example.demo.currency_exchange.CurrencyExchangeService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static com.example.demo.Util.convertJsonToTransactionList;
+import static com.example.demo.Util.convertJsonToList;
 
 @Service
 @Slf4j
@@ -19,15 +18,7 @@ public class TransactionService {
     private TransactionDao transactionDao;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private TransactionProducerService producerService;
-    @Autowired
     private CurrencyExchangeService currencyExchangeService;
-    @Autowired
-    private TransactionProducerService transactionProducerService;
-
     public PaginatedTransactionResponse getPaginatedTransactions(final String userId, final int pageNumber, final int pageSize,
                                                                  final String originalCurrency,
                                                                  final String targetCurrency) {
@@ -65,7 +56,7 @@ public class TransactionService {
     }
 
     public void saveTransactionList(final String transactionListJson) {
-        transactionDao.saveAll(convertJsonToTransactionList(transactionListJson));
+        transactionDao.saveAll(convertJsonToList(transactionListJson, Transaction.class));
     }
 
 }

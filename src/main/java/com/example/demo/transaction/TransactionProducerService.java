@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.example.demo.Util.convertListToJson;
+import static com.example.demo.Util.convertToJson;
 
 @Service
 public class TransactionProducerService {
@@ -15,7 +15,8 @@ public class TransactionProducerService {
     private KafkaTemplate<String, String> kafkaTemplate;
 
     public void sendTransactionList(final List<Transaction> transactionList) {
-        final String transactionJson = convertListToJson(transactionList);
+        final String transactionJson = convertToJson(transactionList);
         kafkaTemplate.send("ebanking-transactions-topic", transactionJson);
     }
+
 }

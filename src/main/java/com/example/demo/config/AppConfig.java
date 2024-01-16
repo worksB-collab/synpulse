@@ -2,10 +2,12 @@ package com.example.demo.config;
 
 import com.example.demo.transaction.Transaction;
 import com.example.demo.transaction.TransactionProducerService;
+import com.example.demo.user.CustomUserDetails;
+import com.example.demo.user.UserProducerService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -15,12 +17,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Configuration
+@AllArgsConstructor
 public class AppConfig {
 
     @Autowired
-    private KafkaTemplate<String, Transaction> kafkaTemplate;
+    private final TransactionProducerService transactionProducerService;
     @Autowired
-    private TransactionProducerService transactionProducerService;
+    private final UserProducerService userProducerService;
 
     @Bean
     public RestTemplate restTemplate() {
@@ -29,9 +32,15 @@ public class AppConfig {
 
     @Bean
     public void initData() {
-        final List<Transaction> transactions = new ArrayList<>();
+        final List<Transaction> transactionList = newRandomTransactions();
+        final CustomUserDetails user = new CustomUserDetails("test", "test");
+        user.setTransactionList(transactionList);
+        userProducerService.sendUser(user);
+    }
 
-        // Placeholder logic to simulate fetching transactions
+    private List<Transaction> newRandomTransactions() {
+        final List<Transaction> transactionList = new ArrayList<>();
+
         for (int i = 1; i <= 30; i++) {
             final Transaction transaction = new Transaction();
             transaction.setId(UUID.randomUUID()
@@ -42,8 +51,10 @@ public class AppConfig {
             transaction.setValueDate(LocalDate.of(2023, 12, i));
             transaction.setDescription("Transaction " + i);
 
-            transactions.add(transaction);
+            transactionList.add(transaction);
         }
-        transactionProducerService.sendTransactionList(transactions);
+        transactionProducerService.sendTransactionList(transactionList);
+
+        return transactionList;
     }
 }
