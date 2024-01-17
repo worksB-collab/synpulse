@@ -5,7 +5,10 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.util.Collection;
 import java.util.List;
 
@@ -13,20 +16,11 @@ import java.util.List;
 @Setter
 @Entity
 @EqualsAndHashCode
+@AllArgsConstructor
 @NoArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
   @Id
-  @Setter(AccessLevel.NONE)
-  @SequenceGenerator(
-          name = "user_id_sequence",
-          sequenceName = "user_id_sequence",
-          allocationSize = 1
-  )
-  @GeneratedValue(
-          strategy = GenerationType.SEQUENCE,
-          generator = "user_id_sequence"
-  )
   private String userId;  // Unique identity key, e.g., P-0123456789
   private String username;
   private String password;  // You may not need this if using JWT
@@ -34,7 +28,8 @@ public class CustomUserDetails implements UserDetails {
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Transaction> transactionList;
 
-  public CustomUserDetails(final String username, final String password) {
+  public CustomUserDetails(final String userId, final String username, final String password) {
+    this.userId = userId;
     this.username = username;
     this.password = password;
   }
@@ -44,22 +39,22 @@ public class CustomUserDetails implements UserDetails {
     // You may implement roles and permissions here if needed
     return null;
   }
-  
-  @Override
-  public String getPassword() {
-    return password;
-  }
-  
+
   @Override
   public String getUsername() {
     return username;
   }
-  
+
+  @Override
+  public String getPassword() {
+    return password;
+  }
+
   @Override
   public boolean isAccountNonExpired() {
     return true;
   }
-  
+
   @Override
   public boolean isAccountNonLocked() {
     return true;

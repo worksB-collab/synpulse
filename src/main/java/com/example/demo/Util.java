@@ -19,8 +19,7 @@ public class Util<T> {
         return gson.fromJson(listJson, TypeToken.getParameterized(List.class, type).getType());
     }
 
-    public static <T> T convertJsonToObject(final String objectJson) {
-        return gson.fromJson(objectJson, new TypeToken<T>() {
-        }.getType());
+    public static <T> T convertJsonToObject(final String objectJson, final Class<T> type) {
+        return gson.fromJson(objectJson, type);
     }
 }
