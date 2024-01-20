@@ -4,14 +4,16 @@ import com.example.demo.user.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.experimental.UtilityClass;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.Date;
 import java.util.function.Function;
 
-@UtilityClass
+@Component
+@Validated
 public class JwtTokenUtil {
     @Value("${jwt.secret}")
     private String secret;

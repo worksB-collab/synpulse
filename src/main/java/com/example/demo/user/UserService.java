@@ -23,6 +23,9 @@ public class UserService implements UserDetailsService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
     @Override
     public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
         return userDao.findByUsername(email).orElseThrow(() -> new IllegalArgumentException(USER_NOT_EXIST));
@@ -44,10 +47,10 @@ public class UserService implements UserDetailsService {
         final CustomUserDetails userDetails = this.getUserByUsername(username);
 
         if (passwordEncoder.matches(password, userDetails.getPassword())) {
-            final String token = JwtTokenUtil.generateToken(userDetails);
+            final String token = jwtTokenUtil.generateToken(userDetails);
             return ResponseEntity.ok(token);
         } else {
-            throw new Exception("Invalid credentials");
+            return ResponseEntity.badRequest().body("Invalid credentials");
         }
     }
 

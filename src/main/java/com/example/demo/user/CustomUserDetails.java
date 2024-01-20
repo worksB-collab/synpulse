@@ -21,9 +21,9 @@ import java.util.List;
 public class CustomUserDetails implements UserDetails {
 
   @Id
-  private String userId;  // Unique identity key, e.g., P-0123456789
+  private String userId;
   private String username;
-  private String password;  // You may not need this if using JWT
+  private String password;
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Transaction> transactionList;

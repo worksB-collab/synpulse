@@ -23,6 +23,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private final UserService userService;
 
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
     @Override
     protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
                                     final FilterChain chain) throws ServletException, IOException {
@@ -34,14 +37,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         // Extract the token from the Authorization header
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7); // Remove "Bearer "
-            username = JwtTokenUtil.getUsernameFromToken(jwtToken);
+            username = jwtTokenUtil.getUsernameFromToken(jwtToken);
         }
 
         // Validate the token and set up the security context
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             final CustomUserDetails userDetails = userService.getUserByUsername(username);
 
-            if (JwtTokenUtil.validateToken(jwtToken, userDetails)) {
+            if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 

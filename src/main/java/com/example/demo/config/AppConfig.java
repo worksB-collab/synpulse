@@ -20,11 +20,6 @@ import java.util.List;
 @AllArgsConstructor
 public class AppConfig {
 
-    @Autowired
-    private final TransactionProducerService transactionProducerService;
-    @Autowired
-    private final UserProducerService userProducerService;
-
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
@@ -35,10 +30,16 @@ public class AppConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Autowired
+    private final TransactionProducerService transactionProducerService;
+    @Autowired
+    private final UserProducerService userProducerService;
+
+
     @Bean
     public void initData() {
         final List<Transaction> transactionList = newRandomTransactions();
-        final CustomUserDetails user = new CustomUserDetails("test", "test", "test");
+        final CustomUserDetails user = new CustomUserDetails("P-0123456789", "test", bCryptPasswordEncoder().encode("test"));
         user.setTransactionList(transactionList);
         userProducerService.sendUser(user);
     }
