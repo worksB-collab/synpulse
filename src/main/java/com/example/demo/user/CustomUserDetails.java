@@ -1,16 +1,12 @@
 package com.example.demo.user;
 
-import com.example.demo.transaction.Transaction;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import java.util.Collection;
-import java.util.List;
 
 @Getter
 @Setter
@@ -24,15 +20,6 @@ public class CustomUserDetails implements UserDetails {
   private String userId;
   private String username;
   private String password;
-
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Transaction> transactionList;
-
-  public CustomUserDetails(final String userId, final String username, final String password) {
-    this.userId = userId;
-    this.username = username;
-    this.password = password;
-  }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

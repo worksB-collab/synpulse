@@ -3,7 +3,7 @@ package com.example.demo.config;
 import com.example.demo.transaction.Transaction;
 import com.example.demo.transaction.TransactionProducerService;
 import com.example.demo.user.CustomUserDetails;
-import com.example.demo.user.UserProducerService;
+import com.example.demo.user.UserDao;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -33,20 +33,16 @@ public class AppConfig {
     @Autowired
     private final TransactionProducerService transactionProducerService;
     @Autowired
-    private final UserProducerService userProducerService;
+    private final UserDao userDao;
 
 
     @Bean
     public void initData() {
-        final List<Transaction> transactionList = newRandomTransactions();
-        final CustomUserDetails user = new CustomUserDetails("P-0123456789", "test", bCryptPasswordEncoder().encode("test"));
-        user.setTransactionList(transactionList);
-        userProducerService.sendUser(user);
-    }
+        final CustomUserDetails user = new CustomUserDetails("P-0123456789", "test", bCryptPasswordEncoder()
+                .encode("test"));
+        userDao.save(user);
 
-    private List<Transaction> newRandomTransactions() {
         final List<Transaction> transactionList = new ArrayList<>();
-
         for (int i = 1; i <= 30; i++) {
             final Transaction transaction = new Transaction();
             transaction.setAmount(new BigDecimal("100"));
@@ -54,11 +50,11 @@ public class AppConfig {
             transaction.setAccountIban("US12345678901234567890");
             transaction.setValueDate(LocalDate.of(2023, 12, i));
             transaction.setDescription("Transaction " + i);
+            transaction.setUser(user);
 
             transactionList.add(transaction);
         }
         transactionProducerService.sendTransactionList(transactionList);
-
-        return transactionList;
     }
+
 }
