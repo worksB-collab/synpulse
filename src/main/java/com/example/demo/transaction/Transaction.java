@@ -19,7 +19,6 @@ public class Transaction {
   private String currency;
   private String accountIban;
   private LocalDate valueDate;
-  private String description;
 
   @ManyToOne(cascade = CascadeType.REMOVE)
   private CustomUserDetails user;

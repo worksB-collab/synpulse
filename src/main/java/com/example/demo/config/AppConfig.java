@@ -43,13 +43,12 @@ public class AppConfig {
         userDao.save(user);
 
         final List<Transaction> transactionList = new ArrayList<>();
-        for (int i = 1; i <= 30; i++) {
+        for (int i = 1; i <= 1000; i++) { // todo random 1m transactions
             final Transaction transaction = new Transaction();
-            transaction.setAmount(new BigDecimal("100"));
-            transaction.setCurrency("USD");
-            transaction.setAccountIban("US12345678901234567890");
-            transaction.setValueDate(LocalDate.of(2023, 12, i));
-            transaction.setDescription("Transaction " + i);
+            transaction.setAmount(new BigDecimal("100")); // todo random
+            transaction.setCurrency("USD"); // todo random
+            transaction.setAccountIban("CH93-0000-0000-0000-0000-0");
+            transaction.setValueDate(LocalDate.of(2023, 12, 1)); // todo random
             transaction.setUser(user);
 
             transactionList.add(transaction);

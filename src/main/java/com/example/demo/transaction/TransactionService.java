@@ -48,8 +48,6 @@ public class TransactionService {
                 .limit(pageSize)
                 .collect(Collectors.toList());
 
-//        final List<Transaction> transactions = transactionDao.findAll();
-
         BigDecimal totalCredit = transactions.stream()
                 .filter(transaction -> transaction.getAmount()
                         .signum() == 1) // Credit transactions
