@@ -13,7 +13,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/authenticate/login")
-    public ResponseEntity<?> login(@RequestBody final UserRequest userRequest) throws Exception {
+    public ResponseEntity<?> login(@RequestBody final UserRequest userRequest) {
         return userService.login(userRequest.getUsername(), userRequest.getPassword());
     }
 

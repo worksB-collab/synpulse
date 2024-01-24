@@ -1,9 +1,15 @@
-FROM openjdk:11-jre-slim
+#FROM openjdk:11-jre-slim
+#
+#WORKDIR /app
+#
+## Copy the application JAR file into the container
+#COPY target/demo-0.0.1-SNAPSHOT.jar /app/demo-0.0.1-SNAPSHOT.jar
+#
+## Specify the command to run your application
+#ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "demo-0.0.1-SNAPSHOT.jar"]
 
-WORKDIR /app
+FROM openjdk:11
 
-# Copy the application JAR file into the container
-COPY target/demo-0.0.1-SNAPSHOT.jar /app/demo-0.0.1-SNAPSHOT.jar
+COPY target/demo-0.0.1-SNAPSHOT.jar app.jar
 
-# Specify the command to run your application
-ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "demo-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java","-jar","/app.jar"]

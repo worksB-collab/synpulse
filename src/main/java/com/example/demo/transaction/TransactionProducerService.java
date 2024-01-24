@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.example.demo.Util.convertToJson;
+import static com.example.demo.JsonUtil.convertToJson;
 
 @Service
 public class TransactionProducerService {

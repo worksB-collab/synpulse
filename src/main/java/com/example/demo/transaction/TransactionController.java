@@ -17,10 +17,9 @@ public class TransactionController {
             @RequestHeader("Authorization") final String token,
             @RequestParam("pageNumber") final int pageNumber,
             @RequestParam("pageSize") final int pageSize,
-            @RequestParam("originalCurrency") final String originalCurrency,
             @RequestParam("targetCurrency") final String targetCurrency) {
         final PaginatedTransactionResponse response = transactionService.getPaginatedTransactions(token, pageNumber, pageSize,
-                originalCurrency, targetCurrency);
+                targetCurrency);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

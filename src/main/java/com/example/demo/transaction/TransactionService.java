@@ -12,10 +12,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.example.demo.Util.convertJsonToList;
+import static com.example.demo.JsonUtil.convertJsonToList;
 
 @Service
 @Slf4j
@@ -31,51 +33,58 @@ public class TransactionService {
     @Autowired
     private CurrencyExchangeService currencyExchangeService;
 
+    private final Map<String, Map<String, BigDecimal>> currencyToCurrencyToRateMap = new HashMap<>();
+
     public PaginatedTransactionResponse getPaginatedTransactions(final String token, final int pageNumber, final int pageSize,
-                                                                 final String originalCurrency,
                                                                  final String targetCurrency) {
 
-        final CustomUserDetails user = userDao.findByUsername(jwtTokenUtil.getUsernameFromToken(token.substring(7)))
+        final CustomUserDetails user = userDao.findById(jwtTokenUtil.getUserIdFromToken(token.substring(7)))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         int offset = (pageNumber - 1) * pageSize;
 
         final List<Transaction> transactions = transactionDao
-                .findByUserId(user.getUserId())
+                .findByAccountId(user.getUserId())
                 .stream()
                 .flatMap(Collection::stream)
                 .skip(offset)
                 .limit(pageSize)
                 .collect(Collectors.toList());
 
-        BigDecimal totalCredit = transactions.stream()
+        final BigDecimal totalCredit = transactions.stream()
                 .filter(transaction -> transaction.getAmount()
                         .signum() == 1) // Credit transactions
-                .map(Transaction::getAmount)
+                .map(transaction ->
+                        transaction.getAmount().multiply(getCurrency(transaction.getCurrency(), targetCurrency)))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal totalDebit = transactions.stream()
+        final BigDecimal totalDebit = transactions.stream()
                 .filter(transaction -> transaction.getAmount()
                         .signum() == -1) // Debit transactions
-                .map(Transaction::getAmount)
+                .map(transaction ->
+                        transaction.getAmount().multiply(getCurrency(transaction.getCurrency(), targetCurrency)))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Call external API to get exchange rate for the given currency
-        BigDecimal exchangeRate = currencyExchangeService.getExchangeRate(originalCurrency, targetCurrency);
-
-        if (exchangeRate == null) {
-            log.info("exchangeRate is null");
-            exchangeRate = BigDecimal.ONE; // no conversion
-        }
-
-        // Convert total credit and debit to the desired currency
-        totalCredit = totalCredit.multiply(exchangeRate);
-        totalDebit = totalDebit.multiply(exchangeRate);
-
-
-        // Build PaginatedTransactionResponse object
         return new PaginatedTransactionResponse(transactions, totalCredit, totalDebit);
     }
+
+    public BigDecimal getCurrency(final String originalCurrency, final String targetCurrency) {
+        final Map<String, BigDecimal> foundCurrencyToRateMap = currencyToCurrencyToRateMap.get(originalCurrency);
+        final BigDecimal rate = currencyExchangeService.getExchangeRate(originalCurrency, targetCurrency);
+        if (foundCurrencyToRateMap == null) {
+            final Map<String, BigDecimal> map = Map.of(targetCurrency, rate);
+            currencyToCurrencyToRateMap.put(originalCurrency, map);
+            return rate;
+        }
+        final BigDecimal foundRate = foundCurrencyToRateMap.get(targetCurrency);
+        if (foundRate == null) {
+            foundCurrencyToRateMap.put(targetCurrency, rate);
+            return rate;
+        } else {
+            return foundRate;
+        }
+    }
+
 
     public void saveTransactionList(final String transactionListJson) {
         transactionDao.saveAll(convertJsonToList(transactionListJson, Transaction.class));

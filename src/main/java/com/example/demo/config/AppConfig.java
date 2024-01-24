@@ -1,5 +1,7 @@
 package com.example.demo.config;
 
+import com.example.demo.account.Account;
+import com.example.demo.account.AccountDao;
 import com.example.demo.transaction.Transaction;
 import com.example.demo.transaction.TransactionProducerService;
 import com.example.demo.user.CustomUserDetails;
@@ -15,6 +17,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.demo.CurrencyUtil.getRandomCurrency;
+
 
 @Configuration
 @AllArgsConstructor
@@ -34,6 +39,8 @@ public class AppConfig {
     private final TransactionProducerService transactionProducerService;
     @Autowired
     private final UserDao userDao;
+    @Autowired
+    private final AccountDao accountDao;
 
 
     @Bean
@@ -42,14 +49,19 @@ public class AppConfig {
                 .encode("test"));
         userDao.save(user);
 
+        final Account account = new Account(user);
+        accountDao.save(account);
+
         final List<Transaction> transactionList = new ArrayList<>();
-        for (int i = 1; i <= 1000; i++) { // todo random 1m transactions
-            final Transaction transaction = new Transaction();
-            transaction.setAmount(new BigDecimal("100")); // todo random
-            transaction.setCurrency("USD"); // todo random
-            transaction.setAccountIban("CH93-0000-0000-0000-0000-0");
-            transaction.setValueDate(LocalDate.of(2023, 12, 1)); // todo random
-            transaction.setUser(user);
+        for (int i = 1; i <= 1000; i++) {
+            final Transaction transaction = new Transaction(
+                    BigDecimal.valueOf(Math.random() * 100),
+                    getRandomCurrency(),
+                    "CH93-0000-0000-0000-0000-0",
+                    LocalDate.of(2023, 12, 1),
+                    "" + i,
+                    account
+            );
 
             transactionList.add(transaction);
         }

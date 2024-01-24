@@ -7,7 +7,7 @@ import lombok.experimental.UtilityClass;
 import java.util.List;
 
 @UtilityClass
-public class Util<T> {
+public class JsonUtil<T> {
 
     private static final Gson gson = new Gson();
 

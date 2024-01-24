@@ -12,8 +12,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import static com.example.demo.Util.convertJsonToObject;
-
 @Service
 @AllArgsConstructor
 public class UserService implements UserDetailsService {
@@ -41,11 +39,7 @@ public class UserService implements UserDetailsService {
         return userDao.findByUsername(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, USER_NOT_EXIST));
     }
 
-    public void saveUser(final String userJson) {
-        userDao.save(convertJsonToObject(userJson, CustomUserDetails.class));
-    }
-
-    public ResponseEntity<?> login(final String username, final String password) throws Exception {
+    public ResponseEntity<?> login(final String username, final String password) {
         final CustomUserDetails userDetails = this.getUserByUsername(username);
 
         if (passwordEncoder.matches(password, userDetails.getPassword())) {
