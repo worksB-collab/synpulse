@@ -42,21 +42,33 @@ public class AppConfig {
     @Autowired
     private final AccountDao accountDao;
 
-
     @Bean
     public void initData() {
-        final CustomUserDetails user = new CustomUserDetails("P-0123456789", "test", bCryptPasswordEncoder()
-                .encode("test"));
+        final CustomUserDetails user = new CustomUserDetails(
+                "P-0123456789",
+                "test",
+                bCryptPasswordEncoder().encode("test"));
         userDao.save(user);
 
+        initOneAccountForUser(user); // first account
+        initOneAccountForUser(user); // second account
+
+        final CustomUserDetails user2 = new CustomUserDetails(
+                "P-0123456782",
+                "test2",
+                bCryptPasswordEncoder().encode("test2"));
+        userDao.save(user2);
+
+    }
+
+    private void initOneAccountForUser(final CustomUserDetails user) {
         final Account account = new Account(user);
         accountDao.save(account);
 
         final List<Transaction> transactionList = new ArrayList<>();
         for (int i = 1; i <= 1000; i++) {
             final Transaction transaction = new Transaction(
-                    BigDecimal.valueOf(Math.random() * 100),
-                    getRandomCurrency(),
+                    getRandomCurrency() + " " + BigDecimal.valueOf(Math.random() * 100),
                     "CH93-0000-0000-0000-0000-0",
                     LocalDate.of(2023, 12, 1),
                     "" + i,
@@ -67,5 +79,4 @@ public class AppConfig {
         }
         transactionProducerService.sendTransactionList(transactionList);
     }
-
 }

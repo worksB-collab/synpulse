@@ -28,8 +28,8 @@ public class PaginatedTransactionResponse {
     transactionList.forEach(transaction -> {
       final Map<String, Object> map = new HashMap<>();
       map.put("id", transaction.getId());
-      map.put("amount", transaction.getAmount());
-      map.put("currency", transaction.getCurrency());
+      map.put("amount", transaction.getAmountWithCurrency());
+      map.put("currency", transaction.getAmountWithCurrency());
       map.put("accountIban", transaction.getAccountIban());
       map.put("valueDate", transaction.getValueDate());
       map.put("description", transaction.getDescription());

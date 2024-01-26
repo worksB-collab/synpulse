@@ -13,6 +13,6 @@ public interface TransactionDao extends JpaRepository<Transaction, Long> {
     @Query("SELECT t FROM Transaction t WHERE t.id = ?1")
     Optional<List<Transaction>> getTransactions(final String userId, final int pageNumber, final int pageSize);
 
-    @Query("SELECT t FROM Transaction t WHERE t.user.userId = :userId")
-    Optional<List<Transaction>> findByAccountId(final String userId);
+    @Query("SELECT t FROM Transaction t WHERE t.account.id = :accountId")
+    Optional<List<Transaction>> findByAccountId(final Long accountId);
 }

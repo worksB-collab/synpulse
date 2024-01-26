@@ -15,11 +15,12 @@ public class TransactionController {
     @GetMapping("/paginate")
     public ResponseEntity<PaginatedTransactionResponse> getPaginatedTransactions(
             @RequestHeader("Authorization") final String token,
+            @RequestParam("accountId") final Long accountId,
             @RequestParam("pageNumber") final int pageNumber,
             @RequestParam("pageSize") final int pageSize,
             @RequestParam("targetCurrency") final String targetCurrency) {
-        final PaginatedTransactionResponse response = transactionService.getPaginatedTransactions(token, pageNumber, pageSize,
-                targetCurrency);
+        final PaginatedTransactionResponse response = transactionService.getPaginatedTransactions(token, accountId,
+                pageNumber, pageSize, targetCurrency);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

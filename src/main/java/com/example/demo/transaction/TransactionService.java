@@ -1,10 +1,13 @@
 package com.example.demo.transaction;
 
 import com.example.demo.JwtTokenUtil;
+import com.example.demo.account.AccountService;
 import com.example.demo.currency_exchange.CurrencyExchangeService;
 import com.example.demo.user.CustomUserDetails;
 import com.example.demo.user.UserDao;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,52 +23,67 @@ import java.util.stream.Collectors;
 import static com.example.demo.JsonUtil.convertJsonToList;
 
 @Service
+@AllArgsConstructor
 @Slf4j
 public class TransactionService {
 
     @Autowired
-    private UserDao userDao;
+    private final UserDao userDao;
     @Autowired
-    private TransactionDao transactionDao;
+    private final TransactionDao transactionDao;
     @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    private final AccountService accountService;
 
     @Autowired
-    private CurrencyExchangeService currencyExchangeService;
+    private final JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    private final CurrencyExchangeService currencyExchangeService;
 
     private final Map<String, Map<String, BigDecimal>> currencyToCurrencyToRateMap = new HashMap<>();
 
-    public PaginatedTransactionResponse getPaginatedTransactions(final String token, final int pageNumber, final int pageSize,
+    public PaginatedTransactionResponse getPaginatedTransactions(final String token, final Long accountId,
+                                                                 final int pageNumber, final int pageSize,
                                                                  final String targetCurrency) {
 
         final CustomUserDetails user = userDao.findById(jwtTokenUtil.getUserIdFromToken(token.substring(7)))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
+        if (!accountService.isAccountBelongToUser(accountId, user.getUserId())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Account not belongs to user");
+        }
+
         int offset = (pageNumber - 1) * pageSize;
 
         final List<Transaction> transactions = transactionDao
-                .findByAccountId(user.getUserId())
+                .findByAccountId(accountId)
                 .stream()
                 .flatMap(Collection::stream)
                 .skip(offset)
                 .limit(pageSize)
                 .collect(Collectors.toList());
 
-        final BigDecimal totalCredit = transactions.stream()
-                .filter(transaction -> transaction.getAmount()
-                        .signum() == 1) // Credit transactions
-                .map(transaction ->
-                        transaction.getAmount().multiply(getCurrency(transaction.getCurrency(), targetCurrency)))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        final BigDecimal totalDebit = transactions.stream()
-                .filter(transaction -> transaction.getAmount()
-                        .signum() == -1) // Debit transactions
-                .map(transaction ->
-                        transaction.getAmount().multiply(getCurrency(transaction.getCurrency(), targetCurrency)))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        final BigDecimal totalCredit = getTotal(transactions, targetCurrency, 1);
+        final BigDecimal totalDebit = getTotal(transactions, targetCurrency, -1);
 
         return new PaginatedTransactionResponse(transactions, totalCredit, totalDebit);
+    }
+
+    @NotNull
+    private BigDecimal getTotal(final List<Transaction> transactions, final String targetCurrency, final int signum) {
+        return transactions.stream()
+                .filter(transaction -> {
+                    final String amountStr = transaction.getAmountWithCurrency().split(" ")[1];
+                    final BigDecimal amount = new BigDecimal(amountStr);
+                    return amount.signum() == signum;
+                })
+                .map(transaction -> {
+                    final String transactionCurrency = transaction.getAmountWithCurrency().split(" ")[0];
+                    final String amountStr = transaction.getAmountWithCurrency().split(" ")[1];
+                    final BigDecimal amount = new BigDecimal(amountStr);
+                    return amount.multiply(getCurrency(transactionCurrency, targetCurrency));
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public BigDecimal getCurrency(final String originalCurrency, final String targetCurrency) {
