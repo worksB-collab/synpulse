@@ -19,7 +19,4 @@ public class JsonUtil<T> {
         return gson.fromJson(listJson, TypeToken.getParameterized(List.class, type).getType());
     }
 
-    public static <T> T convertJsonToObject(final String objectJson, final Class<T> type) {
-        return gson.fromJson(objectJson, type);
-    }
 }

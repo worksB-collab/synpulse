@@ -14,9 +14,7 @@ public class TransactionConsumerService {
     @KafkaListener(topics = "ebanking-transactions-topic", groupId = "ebanking-consumer-group")
     public void consumeTransaction(final ConsumerRecord<String, String> record) {
         final String transactionJson = record.value();
-
         transactionService.saveTransactionList(transactionJson);
     }
-
 
 }
