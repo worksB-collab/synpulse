@@ -27,21 +27,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         http.csrf().disable()
-                // Allow requests to "/authenticate" without authentication
                 .authorizeRequests().antMatchers("/authenticate/**").permitAll()
-                // All other requests must be authenticated
                 .anyRequest().authenticated()
                 .and()
-                // Use custom JWT filter
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
-                // Handle unauthorized requests
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint);
 
     }
 
     @Override
     public void configure(final WebSecurity web) throws Exception {
-        // Allow Swagger UI to be accessed without authentication
         web.ignoring().antMatchers("/v2/api-docs", "/configuration/ui",
                 "/swagger-resources/**", "/configuration/**", "/swagger-ui.html", "/webjars/**");
     }

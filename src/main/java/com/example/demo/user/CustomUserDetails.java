@@ -23,7 +23,6 @@ public class CustomUserDetails implements UserDetails {
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    // You may implement roles and permissions here if needed
     return null;
   }
 

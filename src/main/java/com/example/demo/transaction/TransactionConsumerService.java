@@ -13,10 +13,8 @@ public class TransactionConsumerService {
 
     @KafkaListener(topics = "ebanking-transactions-topic", groupId = "ebanking-consumer-group")
     public void consumeTransaction(final ConsumerRecord<String, String> record) {
-        // Deserialize the JSON representation of the transaction and process it
         final String transactionJson = record.value();
 
-        // Implement your logic to process the transaction data
         transactionService.saveTransactionList(transactionJson);
     }
 
