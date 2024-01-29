@@ -1,10 +1,10 @@
 package com.example.demo.transaction;
 
-import com.example.demo.JwtTokenUtil;
 import com.example.demo.account.AccountService;
-import com.example.demo.currency_exchange.CurrencyExchangeService;
+import com.example.demo.currency.CurrencyService;
 import com.example.demo.user.CustomUserDetails;
 import com.example.demo.user.UserDao;
+import com.example.demo.util.JwtTokenUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.example.demo.JsonUtil.convertJsonToList;
+import static com.example.demo.util.JsonUtil.convertJsonToList;
 
 @Service
 @AllArgsConstructor
@@ -38,7 +38,7 @@ public class TransactionService {
     private final JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    private final CurrencyExchangeService currencyExchangeService;
+    private final CurrencyService currencyService;
 
     private final Map<String, Map<String, BigDecimal>> currencyToCurrencyToRateMap = new HashMap<>();
 
@@ -88,7 +88,7 @@ public class TransactionService {
 
     public BigDecimal getCurrency(final String originalCurrency, final String targetCurrency) {
         final Map<String, BigDecimal> foundCurrencyToRateMap = currencyToCurrencyToRateMap.get(originalCurrency);
-        final BigDecimal rate = currencyExchangeService.getExchangeRate(originalCurrency, targetCurrency);
+        final BigDecimal rate = currencyService.getExchangeRate(originalCurrency, targetCurrency);
         if (foundCurrencyToRateMap == null) {
             final Map<String, BigDecimal> map = Map.of(targetCurrency, rate);
             currencyToCurrencyToRateMap.put(originalCurrency, map);

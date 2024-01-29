@@ -1,7 +1,8 @@
-package com.example.demo;
+package com.example.demo.config;
 
 import com.example.demo.user.CustomUserDetails;
 import com.example.demo.user.UserService;
+import com.example.demo.util.JwtTokenUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,13 +35,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String userId = null;
         String jwtToken = null;
 
-        // Extract the token from the Authorization header
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7); // Remove "Bearer "
             userId = jwtTokenUtil.getUserIdFromToken(jwtToken);
         }
 
-        // Validate the token and set up the security context
         if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             final CustomUserDetails userDetails = userService.getUserById(userId);
 

@@ -1,4 +1,4 @@
-package com.example.demo.currency_exchange;
+package com.example.demo.currency;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 @Service
-public class CurrencyExchangeService {
+public class CurrencyService {
     @Value("${external.api.url}")
     private String EXCHANGE_RATE_API_URL;
 
@@ -20,13 +20,13 @@ public class CurrencyExchangeService {
     public BigDecimal getExchangeRate(final String originalCurrency, final String targetCurrency) {
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<ExchangeRateResponse> response = restTemplate.exchange(
+        
+        ResponseEntity<CurrencyResponse> response = restTemplate.exchange(
                 EXCHANGE_RATE_API_URL + originalCurrency + "/" + targetCurrency,
                 HttpMethod.GET,
                 entity,
-                ExchangeRateResponse.class
-        );
+                CurrencyResponse.class
+                                                                         );
 
         if (response.getStatusCode() == HttpStatus.OK) {
             return Objects.requireNonNull(response.getBody()).getConversion_rate();

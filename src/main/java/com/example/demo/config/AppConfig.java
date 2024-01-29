@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.demo.CurrencyUtil.getRandomCurrency;
+import static com.example.demo.util.CurrencyUtil.getRandomCurrency;
 
 
 @Configuration

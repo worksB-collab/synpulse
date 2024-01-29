@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.util;
 
 import com.example.demo.user.CustomUserDetails;
 import io.jsonwebtoken.Claims;

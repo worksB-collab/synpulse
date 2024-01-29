@@ -1,7 +1,5 @@
 package com.example.demo.config;
 
-import com.example.demo.JwtAuthenticationEntryPoint;
-import com.example.demo.JwtRequestFilter;
 import com.example.demo.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
