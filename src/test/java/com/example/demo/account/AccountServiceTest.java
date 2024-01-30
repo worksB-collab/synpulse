@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.demo.account.AccountOm.newAccount;
+import static com.example.demo.user.UserOm.newUser;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AccountServiceTest {
@@ -24,11 +26,10 @@ class AccountServiceTest {
 
     @Test
     void getAccountIdsSuccess() {
-        final String userId = "testUserId";
-        final Account account1 = new Account();
-        account1.setId(1L);
-        final Account account2 = new Account();
-        account2.setId(2L);
+        final String userId = "userId";
+        final CustomUserDetails user = newUser(userId);
+        final Account account1 = newAccount(1L, user);
+        final Account account2 = newAccount(2L, user);
 
         new Expectations() {{
             accountDao.findByUserId(userId);
@@ -37,7 +38,7 @@ class AccountServiceTest {
 
         final List<Long> accountIds = accountService.getAccountIds(userId);
 
-        assertEquals(Arrays.asList(1L, 2L), accountIds, "Should return correct account IDs");
+        assertEquals(Arrays.asList(1L, 2L), accountIds);
     }
 
     @Test
@@ -49,36 +50,32 @@ class AccountServiceTest {
             result = Optional.empty();
         }};
 
-        ResponseStatusException exception = assertThrows(
+        final ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
                 () -> accountService.getAccountIds(userId),
-                "Should throw ResponseStatusException when no accounts found"
+                "no accounts found"
         );
 
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus(), "Exception status should be NOT_FOUND");
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 
     @Test
     void isAccountBelongToUserSuccess() {
-        final Long accountId = 1L;
-        final String userId = "testUserId";
-        final CustomUserDetails user = new CustomUserDetails();
-        user.setUserId(userId);
-        final Account account = new Account();
-        account.setUser(user);
+        final CustomUserDetails user = newUser("userId");
+        final Account account = newAccount(1L, user);
 
         new Expectations() {{
-            accountDao.findById(accountId);
+            accountDao.findById(account.getId());
             result = Optional.of(account);
         }};
 
-        assertTrue(accountService.isAccountBelongToUser(accountId, userId), "Should return true if account belongs to user");
+        assertTrue(accountService.isAccountBelongToUser(account.getId(), user.getUserId()));
     }
 
     @Test
     void isAccountBelongToUserNotFound() {
         final Long accountId = 1L;
-        final String userId = "testUserId";
+        final String userId = "userId";
 
         new Expectations() {{
             accountDao.findById(accountId);
@@ -88,9 +85,9 @@ class AccountServiceTest {
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
                 () -> accountService.isAccountBelongToUser(accountId, userId),
-                "Should throw ResponseStatusException when account not found"
+                "account not found"
         );
 
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus(), "Exception status should be NOT_FOUND");
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 }

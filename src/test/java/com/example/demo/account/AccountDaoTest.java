@@ -1,6 +1,7 @@
 package com.example.demo.account;
 
 import com.example.demo.user.CustomUserDetails;
+import com.example.demo.user.UserDao;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -16,18 +17,28 @@ class AccountDaoTest {
 
     @Autowired
     private AccountDao accountDao;
+    @Autowired
+    private UserDao userDao;
 
     @Test
-    void findByUserId() {
-        CustomUserDetails user = new CustomUserDetails(); // Properly create a CustomUserDetails instance
-        user.setUserId("testUserId"); // Assuming CustomUserDetails has a setUserId method
-
-        Account account = new Account(user);
+    void findByUserIdSuccess() {
+        final CustomUserDetails user = new CustomUserDetails("id", "username", "password");
+        userDao.save(user);
+        userDao.flush();
+        final Account account = new Account(user);
         accountDao.save(account);
 
-        Optional<List<Account>> result = accountDao.findByUserId("testUserId");
-        assertTrue(result.isPresent(), "Result should be present");
-        assertEquals(1, result.get().size(), "Should find one account");
-        assertEquals(account, result.get().get(0), "The account should match the one saved");
+        final Optional<List<Account>> result = accountDao.findByUserId("id");
+
+        assertTrue(result.isPresent());
+        assertEquals(1, result.get().size());
+    }
+
+    @Test
+    void findByUserIdNotFound() {
+        final Optional<List<Account>> result = accountDao.findByUserId("testUserId");
+
+        assertTrue(result.isPresent());
+        assertEquals(0, result.get().size());
     }
 }

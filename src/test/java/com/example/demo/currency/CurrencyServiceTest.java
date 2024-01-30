@@ -3,9 +3,13 @@ package com.example.demo.currency;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -21,6 +25,13 @@ class CurrencyServiceTest {
     @Injectable
     private RestTemplate restTemplate;
 
+    @BeforeEach
+    void setUp() {
+        currencyService = new CurrencyService();
+        ReflectionTestUtils.setField(currencyService, "EXCHANGE_RATE_API_URL", url);
+        // Set up other necessary mockings and initializations
+    }
+
     @Test
     void getExchangeRateSuccess() {
         final String originalCurrency = "USD";
@@ -33,14 +44,14 @@ class CurrencyServiceTest {
         new Expectations() {{
             restTemplate.exchange(
                     url + originalCurrency + "/" + targetCurrency,
-                    org.springframework.http.HttpMethod.GET,
-                    (org.springframework.http.HttpEntity<?>) any,
+                    HttpMethod.GET,
+                    (HttpEntity<?>) any,
                     CurrencyResponse.class
             );
             result = new ResponseEntity<>(mockResponse, HttpStatus.OK);
         }};
 
-        BigDecimal rate = currencyService.getExchangeRate(originalCurrency, targetCurrency);
+        final BigDecimal rate = currencyService.getExchangeRate(originalCurrency, targetCurrency);
 
         assertEquals(expectedRate, rate, "Exchange rate should match the expected value");
     }
