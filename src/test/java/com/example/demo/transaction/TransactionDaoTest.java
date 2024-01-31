@@ -9,6 +9,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.demo.account.AccountOm.newAccountWithoutUser;
+import static com.example.demo.transaction.TransactionOm.newTransaction;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -22,10 +24,11 @@ class TransactionDaoTest {
 
     @Test
     void findByAccountIdSuccess() {
-        final Account account = new Account();
-        account.setId(1L);
+        final Account account = newAccountWithoutUser();
         accountDao.save(account);
-        final Transaction transaction = new Transaction("100 USD", "IBAN", null, "Description", account);
+        accountDao.flush();
+
+        final Transaction transaction = newTransaction(account);
         transactionDao.save(transaction);
 
         final Optional<List<Transaction>> result = transactionDao.findByAccountId(account.getId());
@@ -36,9 +39,7 @@ class TransactionDaoTest {
 
     @Test
     void findByAccountIdNotFound() {
-        final Long accountId = 999L;
-
-        final Optional<List<Transaction>> result = transactionDao.findByAccountId(accountId);
+        final Optional<List<Transaction>> result = transactionDao.findByAccountId(1L);
 
         assertTrue(result.isPresent());
         assertEquals(0, result.get().size());

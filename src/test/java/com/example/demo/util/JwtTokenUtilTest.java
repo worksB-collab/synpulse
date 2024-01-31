@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static com.example.demo.user.UserOm.newUser;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JwtTokenUtilTest {
@@ -14,50 +15,46 @@ class JwtTokenUtilTest {
     @BeforeEach
     void setUp() {
         jwtTokenUtil = new JwtTokenUtil();
-        ReflectionTestUtils.setField(jwtTokenUtil, "secret", "testSecretKey");
-        ReflectionTestUtils.setField(jwtTokenUtil, "expiration", 3600000L); // 1 hour for testing
+        ReflectionTestUtils.setField(jwtTokenUtil, "secret", "secret");
+        ReflectionTestUtils.setField(jwtTokenUtil, "expiration", 3600000L);
     }
 
     @Test
     void generateTokenTest() {
-        CustomUserDetails userDetails = new CustomUserDetails();
-        userDetails.setUserId("testUserId");
+        final CustomUserDetails user = newUser();
 
-        String token = jwtTokenUtil.generateToken(userDetails);
+        String token = jwtTokenUtil.generateToken(user);
 
-        assertNotNull(token, "Token should not be null");
+        assertNotNull(token);
     }
 
     @Test
     void getUserIdFromTokenTest() {
-        final CustomUserDetails userDetails = new CustomUserDetails();
-        userDetails.setUserId("testUserId");
+        final CustomUserDetails user = newUser();
 
-        final String token = jwtTokenUtil.generateToken(userDetails);
+        final String token = jwtTokenUtil.generateToken(user);
         final String userId = jwtTokenUtil.getUserIdFromToken(token);
 
-        assertEquals("testUserId", userId, "UserId should match the one in the token");
+        assertEquals(user.getUserId(), userId);
     }
 
     @Test
     void validateTokenTest() {
-        final CustomUserDetails userDetails = new CustomUserDetails();
-        userDetails.setUserId("testUserId");
+        final CustomUserDetails user = newUser();
 
-        final String token = jwtTokenUtil.generateToken(userDetails);
-        final boolean isValid = jwtTokenUtil.validateToken(token, userDetails);
+        final String token = jwtTokenUtil.generateToken(user);
+        final boolean isValid = jwtTokenUtil.validateToken(token, user);
 
-        assertTrue(isValid, "Token should be valid");
+        assertTrue(isValid);
     }
 
     @Test
     void isTokenExpiredTest() {
-        final CustomUserDetails userDetails = new CustomUserDetails();
-        userDetails.setUserId("testUserId");
+        final CustomUserDetails user = newUser();
 
-        final String token = jwtTokenUtil.generateToken(userDetails);
+        final String token = jwtTokenUtil.generateToken(user);
         final boolean isExpired = jwtTokenUtil.isTokenExpired(token);
 
-        assertFalse(isExpired, "Token should not be expired");
+        assertFalse(isExpired);
     }
 }

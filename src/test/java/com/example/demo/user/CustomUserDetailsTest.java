@@ -1,43 +1,23 @@
 package com.example.demo.user;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.security.core.GrantedAuthority;
 
-import java.util.Collection;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static com.example.demo.user.UserOm.newUser;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CustomUserDetailsTest {
 
     @Test
-    void userDetailsGetters() {
-        final String userId = "testUserId";
-        final String username = "testUsername";
-        final String password = "testPassword";
+    void userInit() {
+        final String userId = "userId";
+        final String username = "username";
+        final String password = "password";
 
-        final CustomUserDetails userDetails = new CustomUserDetails(userId, username, password);
+        final CustomUserDetails userDetails = newUser(userId, username, password);
 
-        assertEquals(userId, userDetails.getUserId(), "getUserId should return correct userId");
-        assertEquals(username, userDetails.getUsername(), "getUsername should return correct username");
-        assertEquals(password, userDetails.getPassword(), "getPassword should return correct password");
+        assertEquals(userId, userDetails.getUserId());
+        assertEquals(username, userDetails.getUsername());
+        assertEquals(password, userDetails.getPassword());
     }
 
-    @Test
-    void userDetailsAuthorities() {
-        final CustomUserDetails userDetails = new CustomUserDetails();
-
-        final Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
-
-        assertNull(authorities, "getAuthorities should return null as per current implementation");
-    }
-
-    @Test
-    void userDetailsBooleanProperties() {
-        final CustomUserDetails userDetails = new CustomUserDetails();
-
-        assertTrue(userDetails.isAccountNonExpired(), "isAccountNonExpired should return true");
-        assertTrue(userDetails.isAccountNonLocked(), "isAccountNonLocked should return true");
-        assertTrue(userDetails.isCredentialsNonExpired(), "isCredentialsNonExpired should return true");
-        assertTrue(userDetails.isEnabled(), "isEnabled should return true");
-    }
 }

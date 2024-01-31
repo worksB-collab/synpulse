@@ -4,11 +4,9 @@ import com.example.demo.account.AccountService;
 import com.example.demo.currency.CurrencyService;
 import com.example.demo.user.CustomUserDetails;
 import com.example.demo.user.UserDao;
+import com.example.demo.util.JsonUtil;
 import com.example.demo.util.JwtTokenUtil;
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Tested;
-import mockit.Verifications;
+import mockit.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,6 +16,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.example.demo.transaction.TransactionOm.newTransaction;
+import static com.example.demo.user.UserOm.newUser;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TransactionServiceTest {
@@ -47,21 +47,21 @@ class TransactionServiceTest {
         final int pageNumber = 1;
         final int pageSize = 5;
         final String targetCurrency = "USD";
-        final CustomUserDetails user = new CustomUserDetails();
+        final CustomUserDetails user = newUser();
         final List<Transaction> transactions = IntStream.range(0, pageSize)
-                .mapToObj(i -> new Transaction("10 USD", "IBAN", null, "Description", null))
+                .mapToObj(i -> new Transaction("EUR 10", null, null, null, null))
                 .collect(Collectors.toList());
 
         new Expectations() {{
             jwtTokenUtil.getUserIdFromToken(token.substring(7));
-            result = "userId";
-            userDao.findById(anyString);
+            result = user.getUserId();
+            userDao.findById(user.getUserId());
             result = Optional.of(user);
             accountService.isAccountBelongToUser(accountId, user.getUserId());
             result = true;
             transactionDao.findByAccountId(accountId);
             result = Optional.of(transactions);
-            currencyService.getExchangeRate(anyString, anyString);
+            currencyService.getExchangeRate("EUR", targetCurrency);
             result = BigDecimal.ONE;
         }};
 
@@ -78,12 +78,12 @@ class TransactionServiceTest {
         final int pageNumber = 1;
         final int pageSize = 5;
         final String targetCurrency = "USD";
-        final CustomUserDetails user = new CustomUserDetails();
+        final CustomUserDetails user = newUser();
 
         new Expectations() {{
             jwtTokenUtil.getUserIdFromToken(token.substring(7));
-            result = "userId";
-            userDao.findById(anyString);
+            result = user.getUserId();
+            userDao.findById(user.getUserId());
             result = Optional.of(user);
             accountService.isAccountBelongToUser(accountId, user.getUserId());
             result = false;
@@ -112,15 +112,23 @@ class TransactionServiceTest {
 
     @Test
     void saveTransactionList() {
-        final String transactionListJson = "[{\"amountWithCurrency\":\"100 USD\",\"accountIban\":\"IBAN\"," +
-                "\"valueDate\":\"2022-01-01\",\"description\":\"Test\",\"account\":null}]";
+        final String transactionListJson = "[{\"id\":\"P-0123456789\",\"amountWithCurrency\":\"100 USD\"," +
+                "\"accountIban\":\"IBAN\",\"valueDate\":null,\"description\":\"Test\",\"account\":null}]";
+        final List<Transaction> transactionList = List.of(newTransaction());
 
-        new Verifications() {{
-            transactionService.saveTransactionList(transactionListJson);
-            times = 1;
-        }};
+        new MockUp<JsonUtil>() {
+            @Mock
+            public <T> List<T> convertJsonToList(String listJson, Class<T> type) {
+                return (List<T>) transactionList;
+            }
+        };
 
         transactionService.saveTransactionList(transactionListJson);
+
+        new Verifications() {{
+            transactionDao.saveAll(transactionList);
+            times = 1;
+        }};
     }
 
 }

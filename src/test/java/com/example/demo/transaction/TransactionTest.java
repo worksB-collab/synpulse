@@ -13,19 +13,19 @@ class TransactionTest {
     @Test
     void transactionInitialization() {
         final String amountWithCurrency = "100 USD";
-        final String accountIban = "US123456789";
+        final String accountIban = "IBAN";
         final LocalDate valueDate = LocalDate.now();
-        final String description = "Test transaction";
-        final Account account = new Account(); // Initialize as needed
+        final String description = "description";
+        final Account account = new Account();
 
-        Transaction transaction = new Transaction(amountWithCurrency, accountIban, valueDate, description, account);
+        final Transaction transaction = new Transaction(amountWithCurrency, accountIban, valueDate, description, account);
 
-        assertNotNull(transaction.getId(), "Transaction ID should be initialized");
-        assertEquals(amountWithCurrency, transaction.getAmountWithCurrency(), "Amount with currency should be correctly set");
-        assertEquals(accountIban, transaction.getAccountIban(), "Account IBAN should be correctly set");
-        assertEquals(valueDate, transaction.getValueDate(), "Value date should be correctly set");
-        assertEquals(description, transaction.getDescription(), "Description should be correctly set");
-        assertEquals(account, transaction.getAccount(), "Account should be correctly set");
+        assertNotNull(transaction.getId());
+        assertEquals(amountWithCurrency, transaction.getAmountWithCurrency());
+        assertEquals(accountIban, transaction.getAccountIban());
+        assertEquals(valueDate, transaction.getValueDate());
+        assertEquals(description, transaction.getDescription());
+        assertEquals(account.getId(), transaction.getAccount().getId());
     }
 
 

@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.Optional;
 
+import static com.example.demo.user.UserOm.newUser;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -16,14 +17,14 @@ class UserDaoTest {
 
     @Test
     void findByUsernameSuccess() {
-        final String username = "testUsername";
-        final CustomUserDetails userDetails = new CustomUserDetails("userId", username, "password"); // Adjust as needed
-        userDao.save(userDetails);
+        final String username = "username";
+        final CustomUserDetails user = newUser(username, "password");
+        userDao.save(user);
 
         final Optional<CustomUserDetails> foundUser = userDao.findByUsername(username);
 
-        assertTrue(foundUser.isPresent(), "User should be found");
-        assertEquals(userDetails, foundUser.get(), "Found user should match the saved user");
+        assertTrue(foundUser.isPresent());
+        assertEquals(user, foundUser.get());
     }
 
     @Test
@@ -32,6 +33,6 @@ class UserDaoTest {
 
         final Optional<CustomUserDetails> foundUser = userDao.findByUsername(username);
 
-        assertFalse(foundUser.isPresent(), "User should not be found");
+        assertFalse(foundUser.isPresent());
     }
 }

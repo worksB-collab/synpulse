@@ -8,12 +8,14 @@ import mockit.Tested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import static com.example.demo.user.UserOm.newUser;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceTest {
@@ -35,37 +37,36 @@ class UserServiceTest {
 
     @Test
     void loadUserByUsernameSuccess() {
-        final String email = "test@example.com";
-        final CustomUserDetails userDetails = new CustomUserDetails(); // Initialize as needed
+        final String username = "test";
+        final CustomUserDetails userDetails = newUser(username, null);
 
         new Expectations() {{
-            userDao.findByUsername(email);
+            userDao.findByUsername(username);
             result = userDetails;
         }};
 
-        final UserDetails result = userService.loadUserByUsername(email);
+        final UserDetails result = userService.loadUserByUsername(username);
 
-        assertEquals(userDetails, result, "Should return the correct UserDetails");
+        assertEquals(userDetails, result);
     }
 
     @Test
     void loadUserByUsernameNotFound() {
-        final String email = "test@example.com";
+        final String username = "test";
 
         new Expectations() {{
-            userDao.findByUsername(email);
-            result = null;
+            userDao.findByUsername(username);
+            result = Optional.empty();
         }};
 
-        assertThrows(UsernameNotFoundException.class, () -> userService.loadUserByUsername(email), "Should throw UsernameNotFoundException");
+        assertThrows(ResponseStatusException.class, () -> userService.loadUserByUsername(username));
     }
 
     @Test
     void loginSuccessful() {
-        final String username = "testUser";
+        final String username = "username";
         final String password = "password";
-        final CustomUserDetails userDetails = new CustomUserDetails(); // Initialize as needed
-        userDetails.setPassword(password);
+        final CustomUserDetails userDetails = newUser(username, password);
         final String token = "jwtToken";
         final List<Long> accountIds = List.of(1L, 2L);
 
@@ -82,18 +83,17 @@ class UserServiceTest {
 
         final ResponseEntity<?> response = userService.login(username, password);
 
-        assertEquals(200, response.getStatusCodeValue(), "Response status should be 200 OK");
-        assertTrue(response.getBody() instanceof Map, "Response body should be a map");
-        assertEquals(token, ((Map) response.getBody()).get("token"), "Token should be correct");
-        assertEquals(accountIds, ((Map) response.getBody()).get("accountList"), "Account list should be correct");
+        assertEquals(200, response.getStatusCodeValue());
+        assertTrue(response.getBody() instanceof Map);
+        assertEquals(token, ((Map) response.getBody()).get("token"));
+        assertEquals(accountIds, ((Map) response.getBody()).get("accountList"));
     }
 
     @Test
     void loginFailed() {
-        final String username = "testUser";
+        final String username = "username";
         final String password = "password";
-        final CustomUserDetails userDetails = new CustomUserDetails(); // Initialize as needed
-        userDetails.setPassword("differentPassword");
+        final CustomUserDetails userDetails = newUser();
 
         new Expectations() {{
             userDao.findByUsername(username);
@@ -104,7 +104,7 @@ class UserServiceTest {
 
         final ResponseEntity<?> response = userService.login(username, password);
 
-        assertEquals(400, response.getStatusCodeValue(), "Response status should be 400 Bad Request");
-        assertEquals("Invalid credentials", response.getBody(), "Response body should indicate invalid credentials");
+        assertEquals(400, response.getStatusCodeValue());
+        assertEquals("Invalid credentials", response.getBody());
     }
 }

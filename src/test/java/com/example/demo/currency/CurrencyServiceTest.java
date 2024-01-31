@@ -29,7 +29,6 @@ class CurrencyServiceTest {
     void setUp() {
         currencyService = new CurrencyService();
         ReflectionTestUtils.setField(currencyService, "EXCHANGE_RATE_API_URL", url);
-        // Set up other necessary mockings and initializations
     }
 
     @Test

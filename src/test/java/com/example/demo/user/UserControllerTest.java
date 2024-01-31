@@ -18,31 +18,31 @@ class UserControllerTest {
 
     @Test
     void loginSuccessful() {
-        final UserRequest userRequest = new UserRequest("testUsername", "testPassword");
-        final ResponseEntity<?> expectedResponse = ResponseEntity.ok("Login successful"); // Adjust as needed
+        final UserRequest userRequest = new UserRequest("username", "password");
+        final ResponseEntity<?> expectedResponse = ResponseEntity.ok("Login successful");
 
         new Expectations() {{
             userService.login(userRequest.getUsername(), userRequest.getPassword());
             result = expectedResponse;
         }};
 
-        ResponseEntity<?> response = userController.login(userRequest);
+        final ResponseEntity<?> response = userController.login(userRequest);
 
-        assertEquals(expectedResponse, response, "Response should match the expected response");
+        assertEquals(expectedResponse, response);
     }
 
     @Test
     void loginUnsuccessful() {
-        final UserRequest userRequest = new UserRequest("testUsername", "testPassword");
-        final ResponseEntity<?> expectedResponse = ResponseEntity.status(401).body("Login failed"); // Adjust as needed
+        final UserRequest userRequest = new UserRequest("username", "password");
+        final ResponseEntity<?> expectedResponse = ResponseEntity.status(401).body("Login failed");
 
         new Expectations() {{
             userService.login(userRequest.getUsername(), userRequest.getPassword());
             result = expectedResponse;
         }};
 
-        ResponseEntity<?> response = userController.login(userRequest);
+        final ResponseEntity<?> response = userController.login(userRequest);
 
-        assertEquals(expectedResponse, response, "Response should match the expected response");
+        assertEquals(expectedResponse, response);
     }
 }

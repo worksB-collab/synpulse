@@ -9,6 +9,10 @@ import static org.apache.commons.lang3.RandomUtils.nextLong;
 
 @UtilityClass
 public class AccountOm {
+    public static Account newAccountWithoutUser() {
+        return new Account(null);
+    }
+
     public static Account newAccount() {
         return newAccount(nextLong(), newUser());
     }

@@ -8,10 +8,18 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 public class UserOm {
 
     public static CustomUserDetails newUser() {
-        return newUser(randomAlphabetic(8));
+        return newUser(randomAlphabetic(8), randomAlphabetic(8), randomAlphabetic(8));
     }
 
     public static CustomUserDetails newUser(final String userId) {
-        return new CustomUserDetails(userId, randomAlphabetic(8), randomAlphabetic(8));
+        return newUser(userId, randomAlphabetic(8), randomAlphabetic(8));
+    }
+
+    public static CustomUserDetails newUser(final String username, final String password) {
+        return newUser(randomAlphabetic(8), username, password);
+    }
+
+    public static CustomUserDetails newUser(final String userId, final String username, final String password) {
+        return new CustomUserDetails(userId, username, password);
     }
 }

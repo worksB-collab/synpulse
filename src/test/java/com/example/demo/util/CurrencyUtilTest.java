@@ -1,9 +1,9 @@
 package com.example.demo.util;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.RepeatedTest;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class CurrencyUtilTest {
 
@@ -11,7 +11,7 @@ class CurrencyUtilTest {
     void getRandomCurrencyReturnsValidCurrency() {
         final String currency = CurrencyUtil.getRandomCurrency();
 
-        Assertions.assertNotNull("getRandomCurrency should not return null", currency);
-        assertFalse(currency.isEmpty(), "getRandomCurrency should not return an empty string");
+        assertNotNull(currency);
+        assertFalse(currency.isEmpty());
     }
 }
