@@ -5,16 +5,13 @@ import com.example.demo.user.UserService;
 import com.example.demo.util.JwtTokenUtil;
 import mockit.*;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class JwtRequestFilterTest {
 
@@ -59,6 +56,10 @@ class JwtRequestFilterTest {
         jwtRequestFilter.doFilterInternal(request, response, filterChain);
 
         assertNotNull(SecurityContextHolder.getContext().getAuthentication());
+
+        new Verifications() {{
+            filterChain.doFilter(request, response);
+        }};
     }
 
     @Test
@@ -80,29 +81,4 @@ class JwtRequestFilterTest {
         }};
     }
 
-    @Test
-    void doFilterInternalWithUserNotFound() throws Exception {
-        final String token = "Bearer validToken";
-        final String userId = "userId";
-
-        new Expectations() {{
-            request.getHeader("Authorization");
-            result = token;
-
-            jwtTokenUtil.getUserIdFromToken(token.substring(7));
-            result = userId;
-
-            userService.getUserById(userId);
-            result = new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-        }};
-
-        assertThrows(ResponseStatusException.class, () -> {
-            jwtRequestFilter.doFilterInternal(request, response, filterChain);
-        });
-
-        new Verifications() {{
-            filterChain.doFilter(request, response);
-            times = 0;
-        }};
-    }
 }

@@ -103,7 +103,6 @@ public class TransactionService {
         }
     }
 
-
     public void saveTransactionList(final String transactionListJson) {
         transactionDao.saveAll(convertJsonToList(transactionListJson, Transaction.class));
     }

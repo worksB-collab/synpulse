@@ -1,15 +1,14 @@
-#FROM openjdk:11-jre-slim
-#
-#WORKDIR /app
-#
-## Copy the application JAR file into the container
-#COPY target/demo-0.0.1-SNAPSHOT.jar /app/demo-0.0.1-SNAPSHOT.jar
-#
-## Specify the command to run your application
-#ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "demo-0.0.1-SNAPSHOT.jar"]
+# Use a base image with Java 11
+FROM openjdk:11-jre-slim
 
-FROM openjdk:11
+# Set the working directory in the Docker container
+WORKDIR /app
 
+# Copy the built JAR file from your host machine into the Docker container
 COPY target/demo-0.0.1-SNAPSHOT.jar app.jar
 
-ENTRYPOINT ["java","-jar","/app.jar"]
+# Expose the port your Spring Boot application runs on
+EXPOSE 8080
+
+# Command to run the application
+CMD ["java", "-jar", "app.jar"]
