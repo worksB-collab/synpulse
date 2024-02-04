@@ -6,10 +6,6 @@ services:
       - "8080:8080"
     depends_on:
       - kafka
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
-      - KAFKA_TOPIC=ebanking-transactions-topic
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
