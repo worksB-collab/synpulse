@@ -15,8 +15,8 @@ import java.util.Map;
 @Configuration
 @EnableKafka
 public class KafkaConfig {
-
-    private static final String BOOTSTRAP_SERVERS = "localhost:29092";
+    
+    private static final String BOOTSTRAP_SERVERS = "kafka:29092";
     private static final String GROUP_ID = "ebanking-consumer-group";
 
     @Bean
