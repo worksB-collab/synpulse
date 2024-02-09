@@ -1,0 +1,22 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: cimg/openjdk:11.0
+    steps:
+      - checkout
+      - run:
+          name: Set Java Version
+          command: |
+            java -version
+      - run:
+          name: Run Maven Clean Test
+          command: |
+            mvn clean test -Pcircleci  # Your specific Maven command
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
