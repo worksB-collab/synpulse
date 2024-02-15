@@ -18,10 +18,10 @@ public class CurrencyService {
     private RestTemplate restTemplate;
 
     public BigDecimal getExchangeRate(final String originalCurrency, final String targetCurrency) {
-        HttpHeaders headers = new HttpHeaders();
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+        final HttpHeaders headers = new HttpHeaders();
+        final HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<CurrencyResponse> response = restTemplate.exchange(
+        final ResponseEntity<CurrencyResponse> response = restTemplate.exchange(
                 EXCHANGE_RATE_API_URL + originalCurrency + "/" + targetCurrency,
                 HttpMethod.GET,
                 entity,
