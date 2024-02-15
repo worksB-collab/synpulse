@@ -29,7 +29,7 @@ security, data access, and messaging with Kafka. It includes Dockerization and K
 ### 1. Clone repo
 
 ```bash
-git clone https://github.com/worksB-collab/synpulse
+git clone https://github.com/worksB-collab/sp
 ```
 
 ### 2. Build app and container
@@ -174,5 +174,5 @@ http://localhost:8080/swagger-ui/
 View the GitHub Actions CI pipeline for the project:
 
 ```
-https://github.com/worksB-collab/synpulse/actions/runs/7912539854
+https://github.com/worksB-collab/sp/actions/runs/7912539854
 ```
