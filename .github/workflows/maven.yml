@@ -2,9 +2,9 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "github-config" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "github-config" ]
+    branches: [ "master" ]
 
 permissions:
   contents: write
