@@ -154,9 +154,15 @@
     </build>
     <profiles>
         <profile>
-            <id>dev</id>
+            <id>windows</id>
             <properties>
-                <jmockit.path>C:\Users\billy\.m2\repository\org\jmockit\jmockit\1.49\jmockit-1.49.jar</jmockit.path>
+                <jmockit.path>C:\Users\{username}\.m2\repository\org\jmockit\jmockit\1.49\jmockit-1.49.jar</jmockit.path>
+            </properties>
+        </profile>
+        <profile>
+            <id>mac</id>
+            <properties>
+                <jmockit.path>/Users/{username}/.m2/repository/org/jmockit/jmockit/1.49/jmockit-1.49.jar</jmockit.path>
             </properties>
         </profile>
         <profile>
