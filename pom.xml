@@ -111,16 +111,6 @@
             <version>3.0.0</version>
         </dependency>
         <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-boot-starter</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
             <version>RELEASE</version>
@@ -162,7 +152,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>-javaagent:C:\Users\billy\.m2\repository\org\jmockit\jmockit\1.49\jmockit-1.49.jar
+                    <argLine>-javaagent:~/.m2/repository/org/jmockit/jmockit/1.49/jmockit-1.49.jar
                     </argLine>
                 </configuration>
             </plugin>

@@ -24,7 +24,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   private final UserService userService;
   private final BCryptPasswordEncoder bCryptPasswordEncoder;
   
-  @Override
+  @Override // security settings for HTTP requests.
   protected void configure(final HttpSecurity http) throws Exception {
     http.csrf()
         .disable()
@@ -40,7 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     
   }
   
-  @Override
+  @Override // global settings for web-based security.
   public void configure(final WebSecurity web) throws Exception {
     web.ignoring()
        .antMatchers("/v2/api-docs", "/v3/api-docs", "/configuration/ui",
